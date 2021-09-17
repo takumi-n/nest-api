@@ -1,11 +1,18 @@
-import { Module } from '@nestjs/common';
+import { MeowMiddleware } from './meow.middleware';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { CatsModule } from './cats/cats.module';
+import { LoggerMiddleware } from './logger.middleware';
 
 @Module({
   imports: [CatsModule, TypeOrmModule.forRoot()],
   controllers: [AppController],
   providers: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('/');
+    consumer.apply(MeowMiddleware).forRoutes('cats');
+  }
+}

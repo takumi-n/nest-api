@@ -1,3 +1,4 @@
+import { MeowGuard } from './../meow.guard';
 import { Cat } from './entities/cat.entity';
 import {
   Controller,
@@ -8,6 +9,9 @@ import {
   Delete,
   Inject,
   CACHE_MANAGER,
+  ParseIntPipe,
+  NotFoundException,
+  UseGuards,
 } from '@nestjs/common';
 import { CatsService } from './cats.service';
 import { CreateCatDto } from './dto/create-cat.dto';
@@ -30,24 +34,33 @@ export class CatsController {
     return this.catsService.findAll();
   }
 
+  @Get('meow')
+  @UseGuards(new MeowGuard())
+  meow() {
+    return { message: 'Meow!' };
+  }
+
   @Get(':id')
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id', new ParseIntPipe()) id: number) {
     const key = this.catCacheKey(id);
     const catFromCache = await this.cacheManager.get(key);
     if (catFromCache instanceof Cat) {
       return catFromCache as Cat;
     }
 
-    const cat = await this.catsService.findOne(+id);
+    const cat = await this.catsService.findOne(id);
+    if (!cat) {
+      throw new NotFoundException();
+    }
     this.cacheManager.set(key, cat);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.catsService.remove(+id);
+  remove(@Param('id', new ParseIntPipe()) id: number) {
+    return this.catsService.remove(id);
   }
 
-  private catCacheKey(id: string) {
+  private catCacheKey(id: number) {
     return `cats-${id}`;
   }
 }

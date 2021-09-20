@@ -16,7 +16,9 @@ import {
 import { CatsService } from './cats.service';
 import { CreateCatDto } from './dto/create-cat.dto';
 import { Cache } from 'cache-manager';
+import { ApiQuery, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('cats')
 @Controller('cats')
 export class CatsController {
   constructor(
@@ -24,6 +26,7 @@ export class CatsController {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
+  @ApiCreatedResponse({ type: Cat })
   @Post()
   create(@Body() createCatDto: CreateCatDto) {
     return this.catsService.create(createCatDto);
@@ -36,6 +39,9 @@ export class CatsController {
 
   @Get('meow')
   @UseGuards(new MeowGuard())
+  @ApiQuery({
+    name: 'nyan',
+  })
   meow() {
     return { message: 'Meow!' };
   }

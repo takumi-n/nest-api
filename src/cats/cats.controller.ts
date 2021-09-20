@@ -1,4 +1,4 @@
-import { MeowGuard } from './../meow.guard';
+import { MeowGuard } from '../guard/meow.guard';
 import { Cat } from './entities/cat.entity';
 import {
   Controller,

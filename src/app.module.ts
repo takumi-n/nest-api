@@ -1,9 +1,9 @@
-import { MeowMiddleware } from './meow.middleware';
+import { MeowMiddleware } from './middleware/meow.middleware';
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { CatsModule } from './cats/cats.module';
-import { LoggerMiddleware } from './logger.middleware';
+import { LoggerMiddleware } from './middleware/logger.middleware';
 
 @Module({
   imports: [CatsModule, TypeOrmModule.forRoot()],
